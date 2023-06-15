@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ping Pong Game</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        canvas {
+            background: #000;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pong" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("pong");
+        const context = canvas.getContext("2d");
+
+        // Create the pong paddle
+        const paddleWidth = 10,
+            paddleHeight = 100;
+        const player = {
+            x: 0,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            color: "#fff",
+            dy: 8 // Paddle's vertical velocity
+        };
+        const computer = {
+            x: canvas.width - paddleWidth,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            color: "#fff",
+            dy: 4 // Computer's paddle velocity
+        };
+
+        // Create the pong ball
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 10,
+            speed: 4,
+            dx: 4,
+            dy: 4
+        };
+
+        // Draw the paddles
+        function drawPaddle(x, y, width, height, color) {
+            context.fillStyle = color;
+            context.fillRect(x, y, width, height);
+        }
+
+        // Draw the ball
+        function drawBall(x, y, radius, color) {
+            context.fillStyle = color;
+            context.beginPath();
+            context.arc(x, y, radius, 0, Math.PI * 2, false);
+            context.closePath();
+            context.fill();
+        }
+
+        // Move the paddles
+        function movePaddle(paddle, upKey, downKey) {
+            document.addEventListener("keydown", function (event) {
+                switch (event.keyCode) {
+                    case upKey:
+                        paddle.y -= paddle.dy;
+                        break;
+                    case downKey:
+                        paddle.y += paddle.dy;
+                        break;
+                }
+            });
+        }
+
+        // Update the canvas
+        function update() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the paddles and ball
+            drawPaddle(player.x, player.y, player.width, player.height, player.color);
+            drawPaddle(computer.x, computer.y, computer.width, computer.height, computer.color);
+            drawBall(ball.x, ball.y, ball.radius, ball.color);
+
+            // Move the paddles
+            movePaddle(player, 87, 83); // W and S keys
+            movePaddle(computer, 38, 40); // Up and Down arrow keys
+
+            // Update ball position
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Ball collision with the paddles
+            if (
+                ball.x + ball.radius > player.x &&
+                ball.x - ball.radius < player.x + player.width &&
+                ball.y + ball.radius > player.y &&
+                ball.y - ball.radius < player.y + player.height
+            ) {
+                ball.dx = -ball.dx;
+            }
+
+            if (
+                ball.x
